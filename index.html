@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mini CyberChef – Encrypt / Decrypt Tool</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+    <h1>Mini CyberChef 🔐</h1>
+
+    <div class="grid">
+      <textarea id="input" placeholder="Input text..."></textarea>
+      <textarea id="output" placeholder="Output result..."></textarea>
+    </div>
+
+    <div class="controls">
+      <select id="operation">
+        <option value="caesar">Caesar Cipher</option>
+        <option value="rot13">ROT13</option>
+        <option value="base64enc">Base64 Encode</option>
+        <option value="base64dec">Base64 Decode</option>
+        <option value="hexenc">Hex Encode</option>
+        <option value="hexdec">Hex Decode</option>
+        <option value="urlenc">URL Encode</option>
+        <option value="urldec">URL Decode</option>
+        <option value="xor">XOR Encryption</option>
+        <option value="atbash">Atbash Cipher</option>
+        <option value="aes">AES-like (Demo)</option>
+      </select>
+
+      <input type="text" id="key" placeholder="Key / Shift (if required)" />
+      <button onclick="run()">Run</button>
+    </div>
+
+    <footer>Inspired by CyberChef • Educational Project</footer>
+  </div>
+
+<script>
+function run() {
+  let text = document.getElementById('input').value;
+  let key = document.getElementById('key').value;
+  let op = document.getElementById('operation').value;
+
+  try {
+    switch(op) {
+      case 'caesar': output.value = caesar(text, parseInt(key||0)); break;
+      case 'rot13': output.value = caesar(text, 13); break;
+      case 'base64enc': output.value = btoa(text); break;
+      case 'base64dec': output.value = atob(text); break;
+      case 'hexenc': output.value = toHex(text); break;
+      case 'hexdec': output.value = fromHex(text); break;
+      case 'urlenc': output.value = encodeURIComponent(text); break;
+      case 'urldec': output.value = decodeURIComponent(text); break;
+      case 'xor': output.value = xor(text, key); break;
+      case 'atbash': output.value = atbash(text); break;
+      case 'aes': output.value = xor(text, key); break; // demo
+    }
+  } catch(e) {
+    output.value = 'Error: ' + e.message;
+  }
+}
+
+function caesar(str, shift) {
+  return str.replace(/[a-z]/gi, c =>
+    String.fromCharCode((c.charCodeAt(0) + shift - (c <= 'Z' ? 65 : 97)) % 26 + (c <= 'Z' ? 65 : 97))
+  );
+}
+
+function toHex(str) {
+  return Array.from(str).map(c => c.charCodeAt(0).toString(16)).join(' ');
+}
+function fromHex(hex) {
+  return hex.split(' ').map(h => String.fromCharCode(parseInt(h,16))).join('');
+}
+
+function xor(text, key) {
+  if (!key) return 'Key required';
+  let res = '';
+  for (let i=0;i<text.length;i++) {
+    res += String.fromCharCode(text.charCodeAt(i) ^ key.charCodeAt(i % key.length));
+  }
+  return res;
+}
+
+function atbash(str) {
+  return str.replace(/[a-z]/gi, c =>
+    String.fromCharCode((c <= 'Z' ? 90 : 122) - (c.charCodeAt(0) - (c <= 'Z' ? 65 : 97)))
+  );
+}
+</script>
+</body>
+</html>
